@@ -30,33 +30,3 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
-
-
-<div class="container mt-5 mb-5">
-    <h3>Report History</h3>
-    <div class="row">
-        {{#each report}}
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{address}}</h5>
-                    <p class="card-text"><strong>Email:</strong> {{email}}</p>
-                    <p class="card-text"><strong>Phone:</strong> {{phone}}</p>
-                    <p class="card-text"><strong>Content:</strong> {{content}}</p>
-                    <p class="card-text"><strong>Report Date:</strong> {{report_date}}</p>
-                    <p class="card-text">State: <span
-                            class="btn  {{#if (eq state 1)}}btn-warning{{else if (eq state 2)}}btn-danger{{/if}}">
-                            {{#if (eq state 1)}}Đang xử lí{{else if (eq state 2)}}Đã xử lí xong{{/if}}
-                        </span></p>
-                </div>
-            </div>
-        </div>
-        {{/each}}
-    </div>
-</div>
-
-<script>
-    Handlebars.registerHelper('eq', function (a, b) {
-        return a === b;
-    });
-</script>

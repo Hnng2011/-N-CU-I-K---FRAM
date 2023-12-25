@@ -1,18 +1,4 @@
 <div class="container">
-  <!-- Row 1: Logo and Add User Button -->
-  <div class="container">
-    <div class="row mt-1">
-      <div class="col-md-6 d-flex align-items-center">
-        <h2>Spaces Management</h2>
-      </div>
-      <div class="col-md-6 d-flex justify-content-end">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddSpaceModal">
-          Add Spaces
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- Row 2: Grid of Cards -->
   <div class="container-fluid mt-1" style="min-height: 640px;">
     <div class="row" id="userGrid">
@@ -27,7 +13,6 @@
           </div>
           <div class="card-footer">
             <a href="/viewSpace/{{_id}}" class="btn btn-primary">View</a>
-            <a href="/deleteItem/{{_id}}" class="btn btn-danger">Delete</a>
           </div>
         </div>
       </div>
@@ -37,41 +22,6 @@
 
 </div>
 
-<div class="modal fade" id="AddSpaceModal" tabindex="-1" aria-labelledby="AddSpaceModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="AddSpaceModalLabel">Add Spaces</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="addItemForm" action="/addSpace" method="post">
-          <label for="address">Address:</label>
-          <input class="form-control" type="text" name="address" required><br>
-
-          <label for="address">Long:</label>
-          <input class="form-control" type="text" name="long" required><br>
-
-          <label for="address">Lat:</label>
-          <input class="form-control" type="text" name="lat" required><br>
-
-          <label for="type">Type:</label>
-          <input class="form-control" type="text" name="type" required><br>
-
-          <label for="format">Format:</label>
-          <input class="form-control" type="text" name="format" required><br>
-
-          <label for="ward">Ward:</label>
-          <input class="form-control" type="text" name="ward" required><br>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="submitForm()">Add</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 
 <script>
