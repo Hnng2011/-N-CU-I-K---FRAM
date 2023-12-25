@@ -1,6 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import { engine } from 'express-handlebars';
+import { create } from 'express-handlebars';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,15 +12,50 @@ mongoose.connect('mongodb://localhost:27017/', {
 });
 
 // Định nghĩa Schema cho MongoDB
-const ItemSchema = new mongoose.Schema({
-    name: String,
-    description: String
+const SpaceSchema = new mongoose.Schema({
+    address: String,
+    long: Number,
+    lat: Number,
+    type: String,
+    format: String,
+    ward: String,
+
 });
 
-const Item = mongoose.model('Item', ItemSchema);
+const SurfacesSchema = new mongoose.Schema({
+    format: String,
+    width: Number,
+    height: Number,
+    imgUrl: String,
+    space: { type: mongoose.Schema.Types.ObjectId, ref: 'Space' },
+});
 
-// Thiết lập Handlebars làm template engine
-app.engine('handlebars', engine());
+const ReportSchema = new mongoose.Schema({
+    address: String,
+    long: Number,
+    lat: Number,
+    email: String,
+    phone: String,
+    content: String,
+    report_date: Date,
+    state: Number,
+    surface: { type: mongoose.Schema.Types.ObjectId, ref: 'Surface' },
+});
+
+const Space = mongoose.model('Space', SpaceSchema);
+const Surfaces = mongoose.model('Surface', SurfacesSchema);
+const Report = mongoose.model('Report', ReportSchema);
+
+
+const hbs = create({
+    helpers: {
+        eq: function (a, b) {
+            return a === b;
+        }
+    }
+});
+
+app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', './views');
 
@@ -28,68 +63,66 @@ app.set('views', './views');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Routes
-const ITEMS_PER_PAGE = 16;
-
 app.get('/', async (req, res) => {
-    const currentPage = parseInt(req.query.page) || 1;
-    const skip = (currentPage - 1) * ITEMS_PER_PAGE;
-
-    const items = await Item.find().skip(skip).limit(ITEMS_PER_PAGE).lean();
-    const totalItems = await Item.countDocuments();
-    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-
-    // Tính toán các trang cho thanh phân trang
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-        pages.push({
-            pageNumber: i,
-            isCurrent: i === currentPage,
-        });
-    }
+    const Spaces = await Space.find().lean();
 
     res.render('home', {
-        items,
-        totalPages,
-        pages,
-        getCurrentPage: function () {
-            return currentPage;
-        },
+        Spaces
+    });
+});
+
+app.get('/viewSpace/:id', async (req, res) => {
+    const id = req.params.id;
+    const surfaces = await Surfaces.find({ space: id }).lean();
+    const address = await Space.findById(id).lean();
+
+    res.render('detail', {
+        surfaces,
+        address
     });
 });
 
 
-app.post('/addItem', async (req, res) => {
-    const { namenew, descriptionnew } = req.body;
-    const newItem = new Item({ name: namenew, description: descriptionnew });
-    await newItem.save();
+app.post('/addSpace', async (req, res) => {
+    const { long, lat, type, format, ward, address } = req.body;
+    const newSpace = new Space({ long, lat, type, format, ward, address });
+    await newSpace.save();
     res.redirect('/');
 });
 
-app.get('/deleteItem/:id', async (req, res) => {
+app.get('/addReport/:id', async (req, res) => {
     const id = req.params.id;
-    const currentPage = req.query.page || 1;
-
-    await Item.findByIdAndDelete(id);
-    res.redirect(`/`);
+    const report = await Report.find({ surface: id }).lean();
+    res.render('report', {
+        id,
+        report,
+    });
 });
 
-app.get('/editItem/:id', async (req, res) => {
-    const id = req.params.id;
+app.post('/addReport/:id', async (req, res) => {
     try {
-        const item = await Item.findById(id).lean();
-        res.json({ success: true, item });
-    } catch (error) {
-        res.status(500).json({ success: false, error: 'Error fetching item.' });
-    }
-});
+        const id = req.params.id;
+        const { address, email, phone, content, report_date, surface, state, long, lat } = req.body;
 
-app.post('/editItem/:id', async (req, res) => {
-    const id = req.params.id;
-    const currentPage = req.query.page || 1;
-    const { nameupd, descriptionupd } = req.body;
-    await Item.findByIdAndUpdate(id, { name: nameupd, description: descriptionupd });
-    res.redirect(`/?page=${currentPage}`);
+        const newReport = new Report({
+            address,
+            email,
+            phone,
+            content,
+            report_date,
+            surface,
+            state,
+            long,
+            lat,
+        });
+
+        await newReport.save();
+        res.redirect(`/addReport/${id}`);
+    } catch (error) {
+        // Xử lý lỗi
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 // Khởi động server

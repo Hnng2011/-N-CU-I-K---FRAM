@@ -3,11 +3,11 @@
   <div class="container">
     <div class="row mt-1">
       <div class="col-md-6 d-flex align-items-center">
-        <h2>User Management</h2>
+        <h2>Spaces Management</h2>
       </div>
       <div class="col-md-6 d-flex justify-content-end">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddUserModal">
-          Add User
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddSpaceModal">
+          Add Spaces
         </button>
       </div>
     </div>
@@ -16,15 +16,17 @@
   <!-- Row 2: Grid of Cards -->
   <div class="container-fluid mt-1" style="min-height: 640px;">
     <div class="row" id="userGrid">
-      {{#each items}}
+      {{#each Spaces}}
       <div class="col-md-3 mb-3">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">{{name}}</h5>
-            <p class="card-text">{{description}}</p>
+            <p><strong> Address: </strong> {{address}}</p>
+            <p> <strong> Type:</strong> {{type}}</p>
+            <p><strong>Format:</strong> {{format}}</p>
+            <p><strong>Ward:</strong> {{ward}}</p>
           </div>
           <div class="card-footer">
-            <a href="/editItem/{{_id}}" class="btn btn-warning">Edit</a>
+            <a href="/viewSpace/{{_id}}" class="btn btn-primary">View</a>
             <a href="/deleteItem/{{_id}}" class="btn btn-danger">Delete</a>
           </div>
         </div>
@@ -33,82 +35,47 @@
     </div>
   </div>
 
-  <div class="container">
-    <div class="pagination ">
-      <ul class="pagination">
-        {{#if totalPages}}
-        {{#each pages}}
-        {{#if this.isCurrent}}
-        <li class="page-item active" aria-current="page">
-          <span class="page-link">{{this.pageNumber}}</span>
-        </li>
-        {{else}}
-        <li class="page-item">
-          <a class="page-link" href="/?page={{this.pageNumber}}">{{this.pageNumber}}</a>
-        </li>
-        {{/if}}
-        {{/each}}
-        {{/if}}
-      </ul>
-    </div>
-  </div>
-
 </div>
 
-<div class="modal fade" id="AddUserModal" tabindex="-1" aria-labelledby="AddUserModalLabel" aria-hidden="true">
+<div class="modal fade" id="AddSpaceModal" tabindex="-1" aria-labelledby="AddSpaceModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="AddUserModalLabel">Add User</h1>
+        <h1 class="modal-title fs-5" id="AddSpaceModalLabel">Add Spaces</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="addItemForm" action="/addItem" method="post">
-          <label for="namenew">Name:</label>
-          <input type="text" class="form-control" id="namenew" name="namenew" required>
-          <br>
-          <label for="descriptionnew">Description:</label>
-          <textarea style="resize: none;" id="descriptionnew" class="form-control" name="descriptionnew"
-            required></textarea>
-          <br>
+        <form id="addItemForm" action="/addSpace" method="post">
+          <label for="address">Address:</label>
+          <input class="form-control" type="text" name="address" required><br>
+
+          <label for="address">Long:</label>
+          <input class="form-control" type="text" name="long" required><br>
+
+          <label for="address">Lat:</label>
+          <input class="form-control" type="text" name="lat" required><br>
+
+          <label for="type">Type:</label>
+          <input class="form-control" type="text" name="type" required><br>
+
+          <label for="format">Format:</label>
+          <input class="form-control" type="text" name="format" required><br>
+
+          <label for="ward">Ward:</label>
+          <input class="form-control" type="text" name="ward" required><br>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="submitForm()">Add User</button>
+        <button type="button" class="btn btn-primary" onclick="submitForm()">Add</button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="UpdateUserModal" tabindex="-1" aria-labelledby="UpdateUserModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="UpdateUserModalLabel">Add User</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="EditItemForm" method="post">
-          <label for="nameupd">Name:</label>
-          <input type="text" class="form-control" id="nameupd" name="nameupd" value="{{item.name}}" required>
-          <br>
-          <label for="descriptionupd">Description:</label>
-          <textarea style="resize: none;" class="form-control" id="descriptionupd" name="descriptionupd" rows="4"
-            required>{{item.description}}</textarea>
-          <br>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="submitFormEdit()">Update User</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script>
-  function submitForm(event) {
+  function submitForm() {
     var form = document.getElementById('addItemForm');
     form.submit();
   }
